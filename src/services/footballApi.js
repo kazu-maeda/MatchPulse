@@ -48,23 +48,25 @@ const STAGE_TO_ID = {
  * WC 2026 の試合一覧を取得する
  * @returns {Promise<import('../data/matches').Match[]>}
  */
+const DEV = import.meta.env.DEV
+
 export async function fetchWcMatches() {
   const url = `/api/football-data?season=${WC_SEASON}`
-  console.log('[API] GET', url)
+  DEV && console.log('[API] GET', url)
 
   let res
   try {
     res = await fetch(url)
   } catch (networkErr) {
-    console.error('[API] fetch threw:', networkErr.message)
+    console.error('[API] network error:', networkErr.message)
     throw networkErr
   }
 
-  console.log('[API] status:', res.status, res.statusText)
+  DEV && console.log('[API] status:', res.status, res.statusText)
 
   if (!res.ok) {
     const body = await res.text()
-    console.error('[API] error body:', body)
+    console.error('[API] error response:', res.status, body.slice(0, 200))
   }
 
   if (res.status === 400) throw new Error('WC 2026 のデータはまだ公開されていません')

@@ -10,37 +10,33 @@ import { MATCHES } from '../data/matches'
 let _cache   = null
 let _pending = null
 
+const DEV = import.meta.env.DEV
+
 export function useMatches() {
-  // キャッシュがあれば即座に API データで初期化
   const [matches, setMatches] = useState(() => _cache ?? MATCHES)
   const [loading, setLoading] = useState(!_cache)
   const [error,   setError]   = useState(null)
   const [source,  setSource]  = useState(_cache ? 'api' : 'dummy')
 
-  // Strict Mode の二重実行でキャンセルされないよう ref で管理
   const mountedRef = useRef(true)
 
   useEffect(() => {
     mountedRef.current = true
 
-    console.log('[useMatches] mount | _cache:', _cache ? `${_cache.length}件` : 'null')
-
-    // キャッシュ済みならフェッチ不要
     if (_cache) {
-      console.log('[useMatches] キャッシュヒット → 即時反映', _cache.length, '件')
+      DEV && console.log('[useMatches] cache hit →', _cache.length, 'matches')
       setMatches(_cache)
       setSource('api')
       setLoading(false)
       return
     }
 
-    // 未フェッチ → 開始（または進行中 Promise に合流）
     if (!_pending) {
-      console.log('[useMatches] APIフェッチ開始...')
+      DEV && console.log('[useMatches] fetching API...')
       _pending = fetchWcMatches()
         .then(data => {
           _cache = data
-          console.log('[useMatches] フェッチ完了 →', data.length, '件をキャッシュ')
+          DEV && console.log('[useMatches] fetched →', data.length, 'matches cached')
           return data
         })
         .catch(err => {
@@ -48,7 +44,7 @@ export function useMatches() {
           throw err
         })
     } else {
-      console.log('[useMatches] 既存フェッチに合流')
+      DEV && console.log('[useMatches] joining in-flight fetch')
     }
 
     setLoading(true)
@@ -56,14 +52,13 @@ export function useMatches() {
     _pending
       .then(data => {
         if (!mountedRef.current) return
-        console.log('[useMatches] setMatches →', data.length, '件')
         setMatches(data)
         setSource('api')
         setError(null)
       })
       .catch(err => {
         if (!mountedRef.current) return
-        console.warn('[useMatches] フェッチ失敗 → ダミーにフォールバック:', err.message)
+        console.warn('[useMatches] fetch failed, falling back to dummy:', err.message)
         setError(err.message)
         setMatches(MATCHES)
         setSource('dummy')
@@ -72,9 +67,7 @@ export function useMatches() {
         if (mountedRef.current) setLoading(false)
       })
 
-    return () => {
-      mountedRef.current = false
-    }
+    return () => { mountedRef.current = false }
   }, [])
 
   return { matches, loading, error, source }
