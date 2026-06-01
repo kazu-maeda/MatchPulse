@@ -1,0 +1,581 @@
+/* ═══════════════════════════════════════════════
+   MatchPulse — Premium Sport
+   Black · Off-White · Gold
+   ═══════════════════════════════════════════════ */
+
+:root {
+  --ink:       #070707;
+  --surface-1: #0f0f0f;
+  --surface-2: #161616;
+  --surface-3: #1f1f1f;
+
+  --gold:        #c8a84b;
+  --gold-light:  #dfc07a;
+  --gold-dim:    rgba(200,168,75,0.09);
+  --gold-border: rgba(200,168,75,0.22);
+
+  --live:  #c94040;
+
+  --off-white: #f0ebe2;
+  --text-hi:   #f0ebe2;
+  --text-mid:  rgba(240,235,226,0.50);
+  --text-lo:   rgba(240,235,226,0.22);
+
+  --rule-hi: rgba(240,235,226,0.10);
+  --rule-lo: rgba(240,235,226,0.055);
+
+  --sp-1:4px;  --sp-2:8px;  --sp-3:12px; --sp-4:16px;
+  --sp-5:20px; --sp-6:24px; --sp-8:32px; --sp-10:40px; --sp-12:48px;
+
+  --r-sm:6px; --r-md:12px; --r-lg:18px; --r-xl:22px;
+  --nav-h:64px;
+  --safe-b:env(safe-area-inset-bottom,0px);
+}
+
+/* ── Reset ──────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;-webkit-text-size-adjust:100%;}
+body{
+  background:var(--ink);color:var(--text-hi);
+  font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',
+    'Helvetica Neue','Segoe UI',sans-serif;
+  -webkit-font-smoothing:antialiased;min-height:100dvh;overflow-x:hidden;
+}
+a{color:inherit;text-decoration:none;}
+button{cursor:pointer;border:none;background:none;font:inherit;color:inherit;}
+
+/* ── Shell ──────────────────────────────────── */
+.app{max-width:480px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;}
+.app__main{flex:1;padding-bottom:calc(var(--nav-h) + var(--safe-b) + 8px);}
+.page{padding-bottom:var(--sp-12);}
+
+/* ═══════════════════════════════════════════════
+   APP BAR  — minimal
+   ═══════════════════════════════════════════════ */
+.app-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px var(--sp-5) 16px;
+}
+.app-bar__logo{display:flex;align-items:center;gap:7px;}
+.app-bar__icon{font-size:0.9rem;opacity:0.8;}
+.app-bar__name{font-size:0.9rem;font-weight:800;letter-spacing:0.01em;color:var(--off-white);}
+.app-bar__badge{
+  font-size:0.57rem;font-weight:700;letter-spacing:0.12em;
+  color:var(--gold);border:1px solid var(--gold-border);
+  padding:3px 9px;border-radius:20px;
+}
+
+/* ═══════════════════════════════════════════════
+   WORLD CUP HERO
+   Apple event page aesthetic:
+   · single focal point ("2026")
+   · maximum breathing room
+   · minimal supporting text
+   · countdown as a quiet, impressive presence
+   ═══════════════════════════════════════════════ */
+.wc-hero{
+  position:relative;overflow:hidden;
+  padding:64px var(--sp-6) 60px;
+  text-align:center;
+  /* スタジアム夜景 → 下に向かって黒に溶け込む */
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.38) 0%,
+      rgba(0,0,0,0.58) 45%,
+      rgba(0,0,0,0.84) 75%,
+      rgba(7,7,7,1.00) 100%
+    ),
+    url('/images/stadium-night-hero.png');
+  background-size:cover;
+  background-position:center center;
+}
+
+/* ── Trophy bg — 2026背後の空気感 ── */
+.wc-hero__trophy-bg{
+  position:absolute;
+  /* top%はtransformなし → 上端の位置が予測できる */
+  top:48%;
+  left:-12%;
+  right:0;
+  margin:0 auto;
+  width:min(44vw, 150px);
+  opacity:0.60;
+  filter:saturate(1.1);
+  mix-blend-mode:screen;
+  pointer-events:none;
+  z-index:0;
+  /* 外周フェード */
+  -webkit-mask-image:radial-gradient(circle at 50% 38%, black 45%, transparent 76%);
+  mask-image:radial-gradient(circle at 50% 38%, black 45%, transparent 76%);
+}
+
+/* ── Hero content (text) — always in front ── */
+.hero-content{
+  position:relative;
+  z-index:1;
+}
+
+/* ── Title block ── */
+.wc-hero__title-block{
+  margin-bottom:48px;
+}
+
+/* "FIFA World Cup™" */
+.wc-hero__eyebrow{
+  display:block;
+  font-size:0.62rem;font-weight:600;letter-spacing:0.24em;
+  text-transform:uppercase;color:var(--text-lo);
+  margin-bottom:12px;
+}
+
+/* "2026" — the star of the show */
+.wc-hero__year{
+  display:block;
+  font-size:min(34vw, 148px);
+  font-weight:900;
+  letter-spacing:-0.065em;
+  line-height:0.85;
+  color:#ffffff;
+  margin-bottom:16px;
+  /* 写真背景でも確実に読める */
+  text-shadow:0 2px 32px rgba(0,0,0,0.5);
+}
+
+/* App value proposition */
+.wc-hero__tagline{
+  font-size:0.88rem;
+  font-weight:400;
+  color:var(--text-mid);
+  line-height:1.65;
+  letter-spacing:0.01em;
+  margin:14px 0 18px;
+}
+
+/* "USA · Canada · Mexico" */
+.wc-hero__sub{
+  display:block;
+  font-size:0.62rem;font-weight:500;letter-spacing:0.18em;
+  text-transform:uppercase;color:var(--text-lo);
+}
+
+/* ── Countdown block ── */
+.wc-hero__countdown-block{
+  position:relative;
+  padding-top:32px;
+}
+/* thin top rule */
+.wc-hero__countdown-block::before{
+  content:'';position:absolute;top:0;left:10%;right:10%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--rule-hi) 30%,var(--rule-hi) 70%,transparent);
+}
+
+/* "Opens In" label */
+.wc-hero__opens-label{
+  display:block;
+  font-size:0.55rem;font-weight:700;letter-spacing:0.22em;
+  text-transform:uppercase;color:var(--gold);
+  margin-bottom:20px;
+  opacity:0.8;
+}
+
+/* Timer row */
+.wc-hero__timer{
+  display:flex;align-items:flex-start;justify-content:center;gap:0;
+}
+.wc-hero__unit{
+  display:flex;flex-direction:column;align-items:center;
+  flex:1;max-width:80px;
+}
+/* The numbers — impactful but clean */
+.wc-hero__num{
+  font-size:clamp(3rem,12.5vw,4.4rem);
+  font-weight:900;letter-spacing:-0.04em;
+  font-variant-numeric:tabular-nums;
+  line-height:1;color:var(--off-white);
+}
+.wc-hero__unit-lbl{
+  font-size:0.5rem;font-weight:700;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--text-lo);margin-top:7px;
+}
+/* colon separator — barely there */
+.wc-hero__sep{
+  font-size:clamp(2.2rem,8vw,3.2rem);font-weight:200;
+  color:rgba(240,235,226,0.15);line-height:1;
+  padding-top:4px;margin:0 3px;flex:none;
+}
+
+.wc-hero__underway{
+  font-size:0.88rem;font-weight:700;letter-spacing:0.1em;color:var(--gold);
+}
+
+/* ═══════════════════════════════════════════════
+   STATS BAR — app dashboard widget
+   構造: [LABEL] → [VALUE大] → [sub小]
+   ═══════════════════════════════════════════════ */
+.stats-bar{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  margin:0 var(--sp-5) var(--sp-2);
+  background:var(--surface-1);
+  border:1px solid var(--rule-lo);
+  border-radius:var(--r-md);
+  overflow:hidden;
+}
+.stats-bar__item{
+  display:flex;flex-direction:column;align-items:center;
+  padding:12px var(--sp-2) 10px;
+  position:relative;gap:2px;
+}
+.stats-bar__item + .stats-bar__item::before{
+  content:'';position:absolute;left:0;top:18%;bottom:18%;
+  width:1px;background:var(--rule-lo);
+}
+/* ラベル（上段 — 小さく） */
+.stats-bar__item-label{
+  font-size:0.48rem;font-weight:700;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--text-lo);
+  white-space:nowrap;
+}
+/* 値（中段 — 主役） */
+.stats-bar__value{
+  font-size:0.82rem;font-weight:800;
+  color:var(--off-white);
+  white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;max-width:100%;
+  line-height:1.1;
+}
+.stats-bar__value--accent{color:var(--gold);}
+/* サブテキスト（下段 — 補足） */
+.stats-bar__sub{
+  font-size:0.48rem;font-weight:600;letter-spacing:0.06em;
+  text-transform:uppercase;color:var(--text-lo);
+  white-space:nowrap;
+}
+
+/* ═══════════════════════════════════════════════
+   SECTION CHROME
+   ═══════════════════════════════════════════════ */
+.section-label{
+  font-size:0.57rem;font-weight:700;letter-spacing:0.2em;
+  text-transform:uppercase;color:var(--gold);opacity:0.78;
+}
+.section-heading{
+  display:flex;align-items:center;gap:var(--sp-3);
+  padding:var(--sp-6) var(--sp-5) var(--sp-3);
+}
+.section-heading::after{content:'';flex:1;height:1px;background:var(--rule-lo);}
+.section-heading__title{
+  font-size:0.58rem;font-weight:700;letter-spacing:0.16em;
+  text-transform:uppercase;color:var(--text-lo);white-space:nowrap;
+}
+.section-pad{padding:0 var(--sp-5);}
+
+/* ═══════════════════════════════════════════════
+   NEXT MATCH HERO CARD
+   ═══════════════════════════════════════════════ */
+.hero-section{padding:var(--sp-5) var(--sp-5) 0;}
+.hero-section__label{margin-bottom:var(--sp-4);}
+
+.hero-card{
+  background:var(--surface-1);
+  border:1px solid var(--rule-hi);
+  border-radius:var(--r-xl);
+  overflow:hidden;
+  padding:var(--sp-6) var(--sp-5) var(--sp-5);
+  position:relative;
+}
+.hero-card::before{
+  content:'';position:absolute;top:0;left:20%;right:20%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-border),transparent);
+}
+
+.hero-card__group{
+  font-size:0.58rem;font-weight:600;letter-spacing:0.16em;
+  text-transform:uppercase;color:var(--text-lo);
+  text-align:center;margin-bottom:var(--sp-6);
+}
+.hero-teams{
+  display:grid;grid-template-columns:1fr auto 1fr;
+  align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-6);
+}
+.hero-team{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.hero-team__flag{font-size:3.2rem;line-height:1;}
+.hero-team__name{
+  font-size:0.82rem;font-weight:700;text-align:center;
+  letter-spacing:0.01em;color:var(--text-hi);
+}
+.hero-vs{font-size:0.57rem;font-weight:700;letter-spacing:0.22em;color:var(--text-lo);}
+
+.hero-countdown{margin-bottom:var(--sp-5);}
+.hero-countdown__label{
+  display:block;font-size:0.53rem;font-weight:700;
+  letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--gold);opacity:0.72;text-align:center;margin-bottom:var(--sp-3);
+}
+.hero-countdown__timer{
+  display:flex;align-items:flex-start;justify-content:center;gap:0;
+}
+.hero-countdown__unit{
+  display:flex;flex-direction:column;align-items:center;min-width:56px;
+}
+.hero-countdown__num{
+  font-size:clamp(2.2rem,8.5vw,3rem);font-weight:900;
+  line-height:1;letter-spacing:-0.04em;
+  font-variant-numeric:tabular-nums;color:var(--off-white);
+}
+.hero-countdown__unit-label{
+  font-size:0.48rem;font-weight:700;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--text-lo);margin-top:4px;
+}
+.hero-countdown__sep{
+  font-size:clamp(1.6rem,6vw,2.2rem);font-weight:200;
+  color:rgba(240,235,226,0.15);line-height:1;
+  padding-top:3px;margin:0 2px;
+}
+.hero-countdown__now{
+  text-align:center;font-size:1.1rem;font-weight:800;
+  letter-spacing:0.08em;color:var(--gold);
+}
+
+.hero-card__meta{text-align:center;margin-bottom:var(--sp-5);}
+.hero-card__time{
+  font-size:0.82rem;font-weight:600;color:var(--text-hi);margin-bottom:3px;
+}
+.hero-card__venue{font-size:0.66rem;color:var(--text-lo);letter-spacing:0.02em;}
+.hero-card__divider{height:1px;background:var(--rule-lo);margin-bottom:var(--sp-4);}
+
+.notif-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;padding:12px;background:transparent;
+  border:1px solid var(--rule-hi);border-radius:var(--r-md);
+  font-size:0.8rem;font-weight:600;color:var(--text-mid);
+  letter-spacing:0.02em;transition:border-color 0.15s,color 0.15s;
+}
+.notif-btn:active{border-color:var(--gold-border);color:var(--text-hi);}
+.notif-btn--scheduled{
+  border-color:var(--gold-border);color:var(--gold);background:var(--gold-dim);
+}
+
+/* ═══════════════════════════════════════════════
+   MATCH CARD
+   ═══════════════════════════════════════════════ */
+.match-list{display:flex;flex-direction:column;gap:8px;}
+
+.match-card{
+  background:var(--surface-1);border:1px solid var(--rule-lo);
+  border-radius:var(--r-md);overflow:hidden;transition:border-color 0.15s;
+}
+.match-card:active{border-color:var(--rule-hi);}
+.match-card--live{border-color:rgba(201,64,64,0.35);}
+
+.match-card__top{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:var(--sp-3) var(--sp-4) var(--sp-2);
+}
+.match-card__meta{
+  font-size:0.58rem;font-weight:600;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--text-lo);
+}
+.badge{font-size:0.56rem;font-weight:700;letter-spacing:0.08em;padding:2px 7px;border-radius:20px;}
+.badge--live{background:var(--live);color:#fff;animation:livePulse 1.6s ease-in-out infinite;}
+@keyframes livePulse{0%,100%{opacity:1;}50%{opacity:0.55;}}
+.badge--finished{color:var(--text-lo);border:1px solid var(--rule-lo);}
+
+.match-card__body{
+  display:grid;grid-template-columns:1fr 88px 1fr;
+  align-items:center;padding:var(--sp-3) var(--sp-4);gap:var(--sp-2);
+}
+.match-card__team{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.match-card__flag{font-size:1.85rem;line-height:1;}
+.match-card__name{
+  font-size:0.7rem;font-weight:700;text-align:center;
+  color:var(--text-hi);letter-spacing:0.01em;
+}
+.match-card__center{text-align:center;}
+.match-card__time{
+  font-size:0.75rem;font-weight:600;color:var(--text-hi);line-height:1.4;
+}
+.match-card__score{
+  display:flex;align-items:center;justify-content:center;gap:4px;
+  font-size:1.45rem;font-weight:900;font-variant-numeric:tabular-nums;
+  letter-spacing:-0.02em;
+}
+.match-card__score-sep{color:var(--text-lo);font-weight:200;}
+.score--win{color:var(--gold-light);}
+.match-card__footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 var(--sp-4) var(--sp-3);
+}
+.match-card__venue{
+  font-size:0.61rem;color:var(--text-lo);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%;
+}
+.match-card__highlight{
+  font-size:0.62rem;font-weight:700;color:var(--gold);
+  border:1px solid var(--gold-border);padding:3px 9px;
+  border-radius:20px;white-space:nowrap;
+}
+
+/* ═══════════════════════════════════════════════
+   FEATURED CARD — Must-Watch
+   ═══════════════════════════════════════════════ */
+.featured-card{
+  background:var(--surface-1);
+  border:1px solid var(--rule-hi);
+  border-radius:var(--r-lg);
+  padding:var(--sp-4) var(--sp-5);
+  position:relative;overflow:hidden;
+}
+/* gold top accent */
+.featured-card::before{
+  content:'';position:absolute;top:0;left:15%;right:15%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-border),transparent);
+}
+
+.featured-card__label{
+  display:block;font-size:0.57rem;font-weight:700;letter-spacing:0.18em;
+  text-transform:uppercase;color:var(--gold);opacity:0.8;margin-bottom:var(--sp-4);
+}
+.featured-card__body{
+  display:grid;grid-template-columns:1fr auto 1fr;
+  align-items:center;gap:var(--sp-2);
+}
+.featured-card__team{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.featured-card__flag{font-size:2.2rem;line-height:1;}
+.featured-card__name{font-size:0.77rem;font-weight:700;text-align:center;color:var(--text-hi);}
+.featured-card__center{text-align:center;}
+.featured-card__time{font-size:0.8rem;font-weight:700;color:var(--text-hi);line-height:1.4;}
+.featured-card__footer{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:var(--sp-4);padding-top:var(--sp-3);border-top:1px solid var(--rule-lo);
+}
+.featured-card__venue{font-size:0.62rem;color:var(--text-lo);}
+.featured-card__group{
+  font-size:0.58rem;font-weight:700;letter-spacing:0.1em;
+  text-transform:uppercase;color:var(--text-lo);
+}
+
+/* ═══════════════════════════════════════════════
+   BOTTOM NAV
+   ═══════════════════════════════════════════════ */
+.bottom-nav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;
+  height:calc(var(--nav-h) + var(--safe-b));padding-bottom:var(--safe-b);
+  background:rgba(5,5,5,0.93);
+  backdrop-filter:blur(28px) saturate(150%);
+  -webkit-backdrop-filter:blur(28px) saturate(150%);
+  border-top:1px solid var(--rule-lo);
+  display:flex;z-index:200;
+}
+.bottom-nav__item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:3px;padding-top:8px;
+  color:var(--text-lo);transition:color 0.2s;position:relative;
+}
+.bottom-nav__item--active{color:var(--off-white);}
+.bottom-nav__item--active::before{
+  content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:16px;height:1px;background:var(--gold);
+}
+.bottom-nav__icon{font-size:1.1rem;line-height:1;}
+.bottom-nav__label{font-size:0.55rem;font-weight:600;letter-spacing:0.05em;}
+
+/* ═══════════════════════════════════════════════
+   PAGE HEADER
+   ═══════════════════════════════════════════════ */
+.page-header{padding:var(--sp-5) var(--sp-5) var(--sp-4);}
+.page-header__title{font-size:1.2rem;font-weight:800;letter-spacing:-0.025em;color:var(--off-white);}
+.page-header__sub{font-size:0.7rem;color:var(--text-mid);margin-top:3px;}
+
+/* ── Date Tabs ──────────────────────────────── */
+.date-tabs{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;border-bottom:1px solid var(--rule-lo);}
+.date-tabs::-webkit-scrollbar{display:none;}
+.date-tabs__inner{display:flex;gap:6px;padding:var(--sp-3) var(--sp-5);width:max-content;}
+.date-tab{
+  display:flex;flex-direction:column;align-items:center;
+  padding:var(--sp-2) var(--sp-4);border-radius:var(--r-sm);
+  background:var(--surface-2);border:1px solid var(--rule-lo);
+  color:var(--text-mid);min-width:50px;transition:all 0.15s;
+}
+.date-tab--active{background:var(--off-white);border-color:var(--off-white);color:var(--ink);}
+.date-tab__month{font-size:0.57rem;font-weight:600;letter-spacing:0.04em;}
+.date-tab__day{font-size:1.05rem;font-weight:800;}
+
+/* ── Team Grid ──────────────────────────────── */
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.team-chip{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  padding:var(--sp-4) var(--sp-2);background:var(--surface-1);
+  border:1px solid var(--rule-lo);border-radius:var(--r-md);
+  position:relative;transition:all 0.15s;
+}
+.team-chip:active{opacity:0.7;}
+.team-chip--active{border-color:var(--gold-border);background:var(--gold-dim);}
+.team-chip__flag{font-size:1.8rem;line-height:1;}
+.team-chip__name{font-size:0.65rem;font-weight:600;text-align:center;color:var(--text-hi);}
+.team-chip__check{position:absolute;top:5px;right:6px;font-size:0.57rem;color:var(--gold);font-weight:800;}
+
+/* ── Group Table ────────────────────────────── */
+.group-table{background:var(--surface-1);border:1px solid var(--rule-lo);border-radius:var(--r-md);overflow:hidden;margin-bottom:var(--sp-4);}
+.group-table__title{font-size:0.62rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--gold);opacity:0.82;padding:var(--sp-3) var(--sp-4);border-bottom:1px solid var(--rule-lo);}
+.group-table__wrapper{overflow-x:auto;}
+.group-table__table{width:100%;border-collapse:collapse;font-size:0.77rem;}
+.group-table__table th,.group-table__table td{padding:var(--sp-2);text-align:center;border-bottom:1px solid var(--rule-lo);white-space:nowrap;}
+.group-table__table th{color:var(--text-lo);font-size:0.6rem;font-weight:700;letter-spacing:0.06em;}
+.group-table__table tbody tr:last-child td{border-bottom:none;}
+.col-team{text-align:left;padding-left:var(--sp-4);}
+.col-pts{font-weight:800;}
+.table-flag{font-size:0.95rem;margin-right:5px;}
+.table-name{font-weight:600;}
+.row--qualified .col-rank{color:var(--gold);font-weight:700;}
+.group-table__note{font-size:0.6rem;color:var(--text-lo);padding:var(--sp-2) var(--sp-4) var(--sp-3);}
+
+/* ── Utility ────────────────────────────────── */
+.empty-state{color:var(--text-lo);font-size:0.82rem;text-align:center;padding:var(--sp-12) var(--sp-5);line-height:1.8;}
+
+@media(min-width:480px){
+  .app{border-left:1px solid var(--rule-lo);border-right:1px solid var(--rule-lo);}
+  .bottom-nav{border-left:1px solid var(--rule-lo);border-right:1px solid var(--rule-lo);}
+}
+
+/* ═══════════════════════════════════════════════
+   PC LAYOUT — スタジアム全画面背景
+   スマホUIが中央に浮いているような見せ方
+   ═══════════════════════════════════════════════ */
+@media(min-width:1024px){
+
+  /* body全体にスタジアム背景 */
+  body{
+    background-image:url('/images/stadium-night-hero.png');
+    background-size:cover;
+    background-position:center;
+    background-attachment:fixed;
+  }
+
+  /* 背景の上にダークオーバーレイ */
+  body::before{
+    content:'';
+    position:fixed;inset:0;
+    background:rgba(0,0,0,0.55);
+    z-index:0;
+    pointer-events:none;
+  }
+
+  /* スマホUIパネルを前面に浮かせる */
+  .app{
+    position:relative;
+    z-index:10;
+    /* パネルの輪郭と奥行きを演出 */
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.07),
+      0 24px 80px rgba(0,0,0,0.65),
+      0 0 140px rgba(0,0,0,0.45);
+  }
+
+  /* bottom-navが確実にoverlay前面に出るよう保証 */
+  .bottom-nav{z-index:210;}
+}
