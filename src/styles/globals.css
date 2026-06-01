@@ -534,6 +534,38 @@ button{cursor:pointer;border:none;background:none;font:inherit;color:inherit;}
 .row--qualified .col-rank{color:var(--gold);font-weight:700;}
 .group-table__note{font-size:0.6rem;color:var(--text-lo);padding:var(--sp-2) var(--sp-4) var(--sp-3);}
 
+/* ═══════════════════════════════════════════════
+   INSTALL BANNER — Android "Add to Home Screen" prompt
+   ═══════════════════════════════════════════════ */
+.install-banner{
+  position:fixed;
+  bottom:calc(var(--nav-h) + var(--safe-b) + 8px);
+  left:50%;transform:translateX(-50%);
+  width:calc(100% - 32px);max-width:448px;
+  background:var(--surface-2);
+  border:1px solid var(--gold-border);
+  border-radius:var(--r-lg);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 14px;
+  z-index:190;
+  box-shadow:0 8px 32px rgba(0,0,0,0.5);
+  backdrop-filter:blur(20px);
+  animation:slideUp 0.3s ease;
+}
+@keyframes slideUp{from{opacity:0;transform:translateX(-50%) translateY(16px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+.install-banner__left{display:flex;align-items:center;gap:10px;}
+.install-banner__icon{width:40px;height:40px;border-radius:10px;flex-shrink:0;}
+.install-banner__title{font-size:0.82rem;font-weight:700;color:var(--text-hi);}
+.install-banner__sub{font-size:0.62rem;color:var(--text-mid);margin-top:1px;}
+.install-banner__btn{
+  font-size:0.75rem;font-weight:700;
+  color:var(--ink);background:var(--off-white);
+  padding:7px 14px;border-radius:20px;
+  white-space:nowrap;flex-shrink:0;
+  transition:opacity 0.15s;
+}
+.install-banner__btn:active{opacity:0.8;}
+
 /* ── Utility ────────────────────────────────── */
 .empty-state{color:var(--text-lo);font-size:0.82rem;text-align:center;padding:var(--sp-12) var(--sp-5);line-height:1.8;}
 

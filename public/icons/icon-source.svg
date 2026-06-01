@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#111111"/>
+
+  <!-- Outer circle — football outline -->
+  <circle cx="256" cy="256" r="176" fill="none" stroke="#ffffff" stroke-width="16"/>
+
+  <!-- Center pentagon (regular, r=80 from center, vertex at top) -->
+  <polygon
+    points="256,176 332,228 306,320 206,320 180,228"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="14"
+    stroke-linejoin="round"
+  />
+
+  <!-- 5 radial lines: pentagon vertex → outer circle edge -->
+  <!-- top -->
+  <line x1="256" y1="176" x2="256" y2="80"  stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <!-- upper-right -->
+  <line x1="332" y1="228" x2="421" y2="195" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <!-- lower-right -->
+  <line x1="306" y1="320" x2="364" y2="394" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <!-- lower-left -->
+  <line x1="206" y1="320" x2="148" y2="394" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <!-- upper-left -->
+  <line x1="180" y1="228" x2="91"  y2="195" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+</svg>

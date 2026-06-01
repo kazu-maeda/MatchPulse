@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { BottomNav } from './components/BottomNav'
+import { InstallBanner } from './components/InstallBanner'
 import { Home } from './pages/Home'
 import { Matches } from './pages/Matches'
 import { Favorites } from './pages/Favorites'
@@ -18,6 +19,7 @@ export default function App() {
             <Route path="/standings" element={<Standings />} />
           </Routes>
         </main>
+        <InstallBanner />
         <BottomNav />
       </div>
     </BrowserRouter>
