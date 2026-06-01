@@ -568,9 +568,15 @@ button{cursor:pointer;border:none;background:none;font:inherit;color:inherit;}
 
 /* ═══════════════════════════════════════════════
    KNOCKOUT BRACKET
-   ・水平スクロール可能な5列ブラケット
-   ・各列 = 1ラウンド、カードは上から順に並ぶ
-   ・未確定チームは薄色、勝者はゴールドハイライト
+   ■ レイアウト方式
+     - 各カードを getCardTop() で計算した top に absolute 配置
+     - ラウンド列の間に SVG コネクターを挿入してブラケット線を描画
+   ■ 寸法定数（JS の KnockoutBracket.jsx と必ず一致させること）
+     CARD_H  = 76px  ← row(28) + row(28) + date(18) + border×2(2)
+     CARD_GAP = 6px
+     SLOT_H  = 82px
+     TOTAL_H = 1312px（16スロット分）
+     HDR_H   = 36px  ← .bracket-col__header の height
    ═══════════════════════════════════════════════ */
 
 /* スクロールコンテナ */
@@ -582,29 +588,21 @@ button{cursor:pointer;border:none;background:none;font:inherit;color:inherit;}
 }
 .bracket-scroll::-webkit-scrollbar{display:none;}
 
-/* 列を横並びにする行 */
+/* 列とSVGを横並びにする行 */
 .bracket-inner{
   display:flex;
   align-items:flex-start;
-  gap:10px;
+  gap:0;           /* コネクターSVGが列間スペースを担う */
   width:max-content;
 }
 
-/* 1ラウンド = 1列 */
-.bracket-col{
-  width:158px;
-  display:flex;
-  flex-direction:column;
-  flex-shrink:0;
-}
-
-/* 列ヘッダー（ラウンド名 + 試合数バッジ） */
+/* 列ヘッダー — 高さ 36px は JS の HDR_H と一致 */
 .bracket-col__header{
+  height:36px;
   display:flex;
-  align-items:baseline;
+  align-items:flex-end;
   justify-content:space-between;
-  padding:0 4px 8px;
-  margin-bottom:8px;
+  padding:0 4px 7px;
   border-bottom:1px solid var(--rule-lo);
 }
 .bracket-col__label{
@@ -622,14 +620,9 @@ button{cursor:pointer;border:none;background:none;font:inherit;color:inherit;}
   font-variant-numeric:tabular-nums;
 }
 
-/* カード群 */
-.bracket-col__matches{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-/* ── 1試合カード ── */
+/* ── 1試合カード ──────────────────────────────
+   合計高さ = row(28) + row(28) + date(18) + border(2) = 76px
+   ── */
 .bk-match{
   background:var(--surface-1);
   border:1px solid var(--rule-lo);
@@ -637,29 +630,23 @@ button{cursor:pointer;border:none;background:none;font:inherit;color:inherit;}
   overflow:hidden;
   transition:border-color 0.15s;
 }
-.bk-match--live{
-  border-color:rgba(201,64,64,0.4);
-}
+.bk-match--live{border-color:rgba(201,64,64,0.4);}
 
-/* チーム行（ホーム / アウェイ） */
+/* チーム行 — height: 28px 固定 */
 .bk-match__row{
+  height:28px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:7px 9px;
+  padding:0 9px;
   gap:4px;
-  min-height:30px;
 }
 .bk-match__row + .bk-match__row{
   border-top:1px solid var(--rule-lo);
 }
 
 /* チーム名 */
-.bk-match__flag{
-  margin-right:4px;
-  font-size:0.85rem;
-  line-height:1;
-}
+.bk-match__flag{margin-right:4px;font-size:0.85rem;line-height:1;}
 .bk-match__team{
   font-size:0.67rem;
   font-weight:600;
@@ -669,7 +656,6 @@ button{cursor:pointer;border:none;background:none;font:inherit;color:inherit;}
   text-overflow:ellipsis;
   flex:1;
   min-width:0;
-  line-height:1.3;
 }
 
 /* スコア */
@@ -683,51 +669,32 @@ button{cursor:pointer;border:none;background:none;font:inherit;color:inherit;}
   text-align:right;
 }
 
-/* 日付フッター */
+/* 日付フッター — height: 18px 固定 */
 .bk-match__date{
+  height:18px;
   display:flex;
   align-items:center;
   gap:6px;
-  padding:4px 9px 5px;
+  padding:0 9px;
   border-top:1px solid var(--rule-lo);
   font-size:0.52rem;
   color:var(--text-lo);
   letter-spacing:0.02em;
 }
 .bk-match__live-badge{
-  font-size:0.5rem;
-  font-weight:700;
-  letter-spacing:0.06em;
-  color:#fff;
-  background:var(--live);
-  padding:1px 5px;
-  border-radius:20px;
+  font-size:0.5rem;font-weight:700;letter-spacing:0.06em;
+  color:#fff;background:var(--live);padding:1px 5px;border-radius:20px;
 }
 
 /* ── バリアント ── */
+/* 未確定チーム */
+.bk-match__row--placeholder .bk-match__team{color:var(--text-lo);font-weight:400;font-style:italic;}
+.bk-match__row--placeholder .bk-match__score{color:var(--text-lo);}
 
-/* 未確定チーム（プレースホルダー） */
-.bk-match__row--placeholder .bk-match__team{
-  color:var(--text-lo);
-  font-weight:400;
-  font-style:italic;
-}
-.bk-match__row--placeholder .bk-match__score{
-  color:var(--text-lo);
-}
-
-/* 勝者ハイライト */
-.bk-match__row--winner{
-  background:rgba(200,168,75,0.07);
-}
-.bk-match__row--winner .bk-match__team{
-  color:var(--gold-light);
-  font-weight:700;
-  font-style:normal;
-}
-.bk-match__row--winner .bk-match__score{
-  color:var(--gold-light);
-}
+/* 勝者 */
+.bk-match__row--winner{background:rgba(200,168,75,0.07);}
+.bk-match__row--winner .bk-match__team{color:var(--gold-light);font-weight:700;font-style:normal;}
+.bk-match__row--winner .bk-match__score{color:var(--gold-light);}
 
 /* ── Utility ────────────────────────────────── */
 .empty-state{color:var(--text-lo);font-size:0.82rem;text-align:center;padding:var(--sp-12) var(--sp-5);line-height:1.8;}
