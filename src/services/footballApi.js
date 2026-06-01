@@ -34,6 +34,16 @@ const STAGE_LABEL = {
   FINAL:               '決勝',
 }
 
+// football-data の stage → ノックアウトブラケットの round ID
+const STAGE_TO_ID = {
+  LAST_32:        'r32',
+  LAST_16:        'r16',
+  QUARTER_FINALS: 'qf',
+  SEMI_FINALS:    'sf',
+  THIRD_PLACE:    'third',
+  FINAL:          'final',
+}
+
 /**
  * WC 2026 の試合一覧を取得する
  * @returns {Promise<import('../data/matches').Match[]>}
@@ -122,10 +132,18 @@ function transformMatch(m) {
     ? { home: m.score.fullTime.home, away: m.score.fullTime.away }
     : null
 
+  // ノックアウト用: ラウンドID と勝者情報を保持
+  // stageId は GROUP_STAGE のみ null（group フィールドで管理するため）
+  const stageId = m.stage === 'GROUP_STAGE' ? null : (STAGE_TO_ID[m.stage] ?? null)
+  // winner: 'HOME_TEAM' | 'AWAY_TEAM' | 'DRAW' | null
+  const winner = m.score?.winner ?? null
+
   return {
     id:           m.id,
     group,
     round,
+    stageId,
+    winner,
     homeTeam:     homeTla,
     awayTeam:     awayTla,
     homeTeamName: m.homeTeam.name,

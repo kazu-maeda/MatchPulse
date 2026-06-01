@@ -11,8 +11,9 @@
  */
 
 import React from 'react'
-import { KNOCKOUT_ROUNDS, KNOCKOUT_MATCHES } from '../data/knockout'
+import { KNOCKOUT_ROUNDS } from '../data/knockout'
 import { TEAMS } from '../data/teams'
+import { useKnockout } from '../hooks/useKnockout'
 
 // ── Bracket geometry ─────────────────────────────────────────────────
 const CARD_H  = 76
@@ -140,11 +141,30 @@ function BracketMatch({ match }) {
 // ── Main export ───────────────────────────────────────────────────────
 
 export function KnockoutBracket() {
+  const { knockoutMatches, loading, source } = useKnockout()
+
   return (
     <div className="bracket-scroll">
+
+      {/* データソースインジケーター（開発確認用） */}
+      {import.meta.env.DEV && (
+        <div style={{
+          margin: '0 0 8px',
+          padding: '4px 8px',
+          background: source === 'api' ? 'rgba(0,200,100,0.07)' : 'rgba(255,160,0,0.07)',
+          border: `1px solid ${source === 'api' ? 'rgba(0,200,100,0.25)' : 'rgba(255,160,0,0.25)'}`,
+          borderRadius: '6px',
+          fontFamily: 'monospace',
+          fontSize: '0.58rem',
+          color: source === 'api' ? '#00c864' : '#ffa000',
+        }}>
+          knockout: {source}{loading ? ' (loading…)' : ''}
+        </div>
+      )}
+
       <div className="bracket-inner">
         {KNOCKOUT_ROUNDS.map((round, roundIdx) => {
-          const matches = KNOCKOUT_MATCHES.filter(m => m.round === round.id)
+          const matches = knockoutMatches.filter(m => m.round === round.id)
           return (
             <React.Fragment key={round.id}>
 
