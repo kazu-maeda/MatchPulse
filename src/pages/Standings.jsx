@@ -1,12 +1,13 @@
+import { useState } from 'react'
 import { TEAMS } from '../data/teams'
 import { GROUP_STANDINGS } from '../data/groups'
 import { useMatches } from '../hooks/useMatches'
+import { KnockoutBracket } from '../components/KnockoutBracket'
 
 function resolveTeam(teamId, teamName) {
   return TEAMS[teamId] ?? { flag: '🏳️', name: teamName ?? teamId }
 }
 
-// matches からグループ別チーム一覧を抽出し、勝点などを全て 0 で初期化する
 function buildGroupsFromMatches(matches) {
   const groups = {}
   matches
@@ -28,7 +29,6 @@ function buildGroupsFromMatches(matches) {
   return groups
 }
 
-// グループ構造にスコアを反映し、勝点順にソートした結果を返す
 function buildStandings(matches) {
   const groups = buildGroupsFromMatches(matches)
 
@@ -57,7 +57,6 @@ function buildStandings(matches) {
   return result
 }
 
-// API 失敗時のフォールバック：groups.js のダミーデータをそのまま使う
 function fallbackStandings() {
   const result = {}
   Object.keys(GROUP_STANDINGS).sort().forEach(g => {
@@ -116,8 +115,9 @@ function GroupTable({ groupName, rows }) {
 }
 
 export function Standings() {
+  const [view, setView] = useState('group')
   const { matches, loading, source } = useMatches()
-  // API 失敗時（source==='dummy' かつ ロード完了）は groups.js へフォールバック
+
   const standings = (!loading && source === 'dummy')
     ? fallbackStandings()
     : buildStandings(matches)
@@ -126,30 +126,64 @@ export function Standings() {
   return (
     <div className="page">
       <header className="page-header">
-        <h1 className="page-header__title">グループ順位表</h1>
+        <h1 className="page-header__title">順位表</h1>
         <p className="page-header__sub">
           {loading
             ? '取得中...'
-            : `${groupCount} グループ · ${source === 'api' ? 'LIVE DATA' : 'DEMO'}`}
+            : `WC 2026 · ${source === 'api' ? 'LIVE DATA' : 'DEMO'}`}
         </p>
       </header>
 
-      {loading && (
-        <div style={{ textAlign: 'center', padding: '24px', fontSize: '0.75rem', color: 'var(--text-lo)' }}>
-          データ取得中...
+      {/* ── タブ ── */}
+      <div className="date-tabs">
+        <div className="date-tabs__inner">
+          <button
+            className={`date-tab${view === 'group' ? ' date-tab--active' : ''}`}
+            onClick={() => setView('group')}
+          >
+            グループステージ
+            {groupCount > 0 && (
+              <span style={{ marginLeft: '4px', fontSize: '0.6rem', opacity: 0.7 }}>
+                ({groupCount})
+              </span>
+            )}
+          </button>
+          <button
+            className={`date-tab${view === 'knockout' ? ' date-tab--active' : ''}`}
+            onClick={() => setView('knockout')}
+          >
+            トーナメント
+          </button>
         </div>
+      </div>
+
+      {/* ── グループステージ ── */}
+      {view === 'group' && (
+        <>
+          {loading && (
+            <div style={{ textAlign: 'center', padding: '24px', fontSize: '0.75rem', color: 'var(--text-lo)' }}>
+              データ取得中...
+            </div>
+          )}
+          <div className="section-pad" style={{ paddingTop: 'var(--sp-5)' }}>
+            {groupCount > 0
+              ? Object.entries(standings).map(([g, rows]) => (
+                  <GroupTable key={g} groupName={g} rows={rows} />
+                ))
+              : !loading && (
+                  <p className="empty-state">グループデータを取得できませんでした</p>
+                )
+            }
+          </div>
+        </>
       )}
 
-      <div className="section">
-        {groupCount > 0
-          ? Object.entries(standings).map(([g, rows]) => (
-              <GroupTable key={g} groupName={g} rows={rows} />
-            ))
-          : !loading && (
-              <p className="empty-state">グループデータを取得できませんでした</p>
-            )
-        }
-      </div>
+      {/* ── トーナメント ── */}
+      {view === 'knockout' && (
+        <div style={{ paddingTop: 'var(--sp-5)' }}>
+          <KnockoutBracket />
+        </div>
+      )}
     </div>
   )
 }
