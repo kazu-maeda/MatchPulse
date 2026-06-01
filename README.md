@@ -1,171 +1,232 @@
 # MatchPulse
 
-**Follow Every Match. Never Miss Kickoff.**
+**2026 FIFA World Cup — Match Tracker PWA**
 
-2026 FIFA ワールドカップを見逃さないための、プレミアムな観戦サポートアプリ。
+> Track every match. Never miss kickoff.
+
+本番URL: **https://matchpulse-omega.vercel.app**  
+GitHub: **https://github.com/kazu-maeda/MatchPulse**
+
+---
+
+## 概要
+
+2026 FIFA ワールドカップ（アメリカ・カナダ・メキシコ共催）の全試合をフォローするための観戦サポートアプリ。
+
+試合データは [football-data.org](https://www.football-data.org/) の API からリアルタイムに取得。APIキーはサーバーサイド（Vercel Serverless Function）でのみ保持し、フロントエンドには一切露出しない構成を採用しています。
+
+スマートフォンのホーム画面にインストール可能な PWA として実装済み。
 
 ---
 
 ## スクリーンショット
 
-> スマホファースト設計。PC では夜のスタジアム背景の中央にアプリが浮かぶ構成。
-
----
-
-## コンセプト
-
-「試合の鼓動を感じる」「一試合も見逃さない」をテーマに、  
-FIFA ワールドカップ 2026 の全試合をフォローできる観戦サポートアプリです。
-
-単なるスコアアプリではなく、**開幕前の高揚感・試合前の緊張感・スタジアムの空気感**をデザインに落とし込んだプロダクトを目指しています。
-
----
-
-## 主な機能
-
-### 実装済み
-
-| 機能 | 説明 |
-|---|---|
-| 🏟 WC ヒーローエリア | 夜のスタジアム背景・トロフィー装飾・2026 大型タイポグラフィ |
-| ⏱ 開幕カウントダウン | WC 開幕 (2026/6/11) までをリアルタイムで表示 |
-| 📅 次の試合カード | 次のキックオフまでのカウントダウン・対戦チーム・会場を表示 |
-| 📊 ダッシュボード Bar | 次の試合 / 今日の試合数 / 登録チーム / 通知状態を一覧表示 |
-| 📋 試合一覧 | 日付タブで絞り込み・グループ別・ステータス別に試合を一覧表示 |
-| ⭐ お気に入りチーム | 応援チームを登録し、該当チームの試合を優先表示 |
-| 📈 グループ順位表 | グループ A–D の勝点・得失点差・順位を表示 |
-| 🔔 通知ボタン | Notification API による通知許可取得の導線 |
-| 🌐 PC 対応 | 1024px 以上でスタジアム背景全画面 + アプリがフロートする UI |
-
-### 実装予定
-
-- [ ] localStorage によるお気に入り永続化（現在はセッション内のみ）
-- [ ] 試合結果・スコア更新（API 連携後）
-- [ ] トーナメント表（決勝トーナメント）
-- [ ] プッシュ通知・PWA 化
-- [ ] Football Data API / ESPN API との接続
-- [ ] Vercel へのデプロイ・本番公開
+> スマホファースト設計（390px 基準）。  
+> PC（1024px 以上）では夜のスタジアム画像を全画面背景に、アプリ UI が中央にフロートする構成。
 
 ---
 
 ## 使用技術
 
-| カテゴリ | 技術 |
+| カテゴリ | 技術・ライブラリ |
 |---|---|
-| フレームワーク | React 18 |
-| ビルドツール | Vite 6 |
+| UI | React 18 |
+| ビルド | Vite 6 |
 | ルーティング | React Router v6 |
 | スタイリング | Vanilla CSS（CSS カスタムプロパティ） |
-| 状態管理 | React Hooks（useState / useEffect） |
-| データ永続化 | localStorage（お気に入り） |
-| デプロイ | Vercel（予定） |
-| データソース | ダミーデータ（後から API 差し替え可能な設計） |
+| PWA | vite-plugin-pwa / Workbox |
+| 状態管理 | React Hooks（useState / useEffect / useRef） |
+| データ永続化 | localStorage（お気に入りチーム） |
+| API | football-data.org v4 |
+| サーバーレス | Vercel Serverless Functions |
+| デプロイ | Vercel |
+
+外部 UI ライブラリ・CSS フレームワークは使用していません。
 
 ---
 
-## デザイン方針
+## 主な機能
+
+| 機能 | 説明 |
+|---|---|
+| 試合データ取得 | football-data.org API から WC 2026 全 104 試合を取得 |
+| フォールバック | API 失敗時はダミーデータで画面を継続表示 |
+| 開幕カウントダウン | WC 開幕・次のキックオフまでをリアルタイム更新（1 秒間隔） |
+| 試合スケジュール | 日付タブで絞り込み / 試合結果タブ切り替え |
+| 注目試合 | 日本戦・ライバルカードを自動ピックアップして優先表示 |
+| お気に入りチーム | 応援チームを登録、関連試合をホーム画面に集約（localStorage 永続化） |
+| グループ順位表 | 試合結果から勝点・得失点差を自動集計、API 失敗時はフォールバック |
+| PWA インストール | Android: バナーからワンタップインストール / iOS: Safari 共有メニュー経由 |
+| オフライン対応 | Service Worker がアプリシェルをキャッシュ、オフラインでも基本画面を表示 |
+| PC レイアウト | スタジアム背景 + フロート UI のデスクトップビュー |
+
+---
+
+## 設計の工夫
+
+### APIキーをフロントに露出しない構成
+
+Vercel Serverless Function（`api/football-data.js`）をプロキシとして挟み、APIキーはサーバー側の環境変数（`FOOTBALL_API_KEY`）としてのみ保持しています。
+
+`VITE_` プレフィックスを付けないことで、Vite のビルド時に環境変数がバンドルに注入されないことを保証しています。
 
 ```
-カラーパレット
-  --ink:       #070707   // 深い黒（ベース）
-  --off-white: #f0ebe2   // 温かみのあるアイボリー（テキスト）
-  --gold:      #c8a84b   // プレステージゴールド（アクセント）
+ブラウザ
+  └─→ /api/football-data?season=2026     （APIキー不要）
+        └─→ Vercel Function               （process.env.FOOTBALL_API_KEY を使用）
+              └─→ football-data.org API   （X-Auth-Token ヘッダーで認証）
 ```
 
-- **モバイルファースト** — iPhone サイズ (390px) を基準に設計
-- **夜のスタジアム** — 実写背景 + 黒グラデーションで没入感を演出
-- **プレミアムスポーツブランド感** — Apple / Nike Football / DAZN を参考に、余白・タイポグラフィ・カード設計を統一
-- **グロー・サイバー感なし** — ネオンや発光エフェクトを排除し、上質な観戦アプリとして設計
+ローカル開発では Vite の `server.proxy` が同じプロキシ役を担い、本番と同じフロントのコードがそのまま動作します。
+
+### モジュールレベルキャッシュによる API 呼び出しの最適化
+
+`useMatches.js` では Promise と取得済みデータをモジュールスコープに保持しています。React Strict Mode の二重レンダリング・複数コンポーネントからの同時利用でも、API リクエストが一度しか発行されません。
+
+```js
+let _cache   = null   // 取得済みデータ
+let _pending = null   // 進行中の Promise（重複リクエスト防止）
+```
+
+### グレースフルデグレード
+
+API が返すステータスコードに応じて具体的なエラーメッセージを表示しつつ、ダミーデータにフォールバックして全画面を継続表示します。ユーザーが白画面を見ることはありません。
+
+### PWA キャッシュ戦略の分離
+
+API レスポンスと静的アセットでキャッシュ戦略を使い分けています。
+
+| 対象 | 戦略 | 理由 |
+|---|---|---|
+| `/api/*` | NetworkFirst（5 秒タイムアウト） | 常に最新データを優先、オフライン時はキャッシュ |
+| 画像 | CacheFirst（30 日） | 変更頻度が低く、毎回フェッチする必要がない |
+| JS / CSS / HTML | Precache | ビルド時に全ファイルをリスト化して確実にキャッシュ |
+
+---
+
+## API セキュリティ構成
+
+```
+.env.local（gitignore 済み、ローカル開発用）
+  FOOTBALL_API_KEY=xxxx   ← VITE_ プレフィックスなし
+
+Vercel 環境変数（暗号化保存、Production のみ）
+  FOOTBALL_API_KEY=xxxx
+
+api/football-data.js（Vercel Serverless Function）
+  process.env.FOOTBALL_API_KEY でアクセス
+  → キーは絶対にブラウザに届かない
+```
+
+**確認方法**: 本番バンドル（`dist/assets/*.js`）を grep してもキー値は検出されません。
+
+---
+
+## PWA 対応
+
+- **manifest.webmanifest** — name / theme_color / display: standalone / orientation: portrait
+- **Service Worker** — Workbox による自動生成、precache + runtime cache
+- **アイコン** — 192×192 / 512×512 PNG（黒背景×白ラインのサッカーボールデザイン）
+- **Apple 対応** — `apple-mobile-web-app-capable` / `apple-touch-icon` meta タグ
+- **インストールバナー** — Android Chrome の `beforeinstallprompt` イベントを捕捉して表示
+
+アイコンのデザインを変更する場合は `public/icons/icon-source.svg` を編集後、`npm run generate-icons` で PNG を再生成してください。
+
+---
+
+## ローカル開発
+
+### 事前準備
+
+[football-data.org](https://www.football-data.org/client/register) で無料 API キーを取得してください（無料プランで WC データにアクセス可能）。
+
+```bash
+git clone https://github.com/kazu-maeda/MatchPulse.git
+cd MatchPulse
+npm install
+```
+
+`.env.local` を作成（VITE_ プレフィックスは付けないこと）:
+
+```
+FOOTBALL_API_KEY=your_api_key_here
+```
+
+```bash
+npm run dev       # 開発サーバー起動 → http://localhost:5173
+npm run build     # 本番ビルド
+npm run preview   # ビルド結果の確認
+```
+
+API キーがない状態でも、エラーに応じてダミーデータにフォールバックするため全画面を確認できます。
 
 ---
 
 ## ディレクトリ構成
 
 ```
-src/
-├── components/
-│   ├── WcHero.jsx          # 開幕ヒーローエリア（カウントダウン含む）
-│   ├── Countdown.jsx       # 次の試合ヒーローカード
-│   ├── MatchCard.jsx       # 試合カード（通常）
-│   ├── FeaturedCard.jsx    # 注目試合カード（ラベル付き）
-│   ├── StatsBar.jsx        # ダッシュボードバー
-│   ├── BottomNav.jsx       # ボトムナビゲーション
-│   └── NotificationButton.jsx
-├── pages/
-│   ├── Home.jsx            # トップページ
-│   ├── Matches.jsx         # 試合一覧
-│   ├── Favorites.jsx       # お気に入りチーム
-│   └── Standings.jsx       # グループ順位表
-├── data/
-│   ├── matches.js          # 試合ダミーデータ（API 差し替え口）
-│   ├── teams.js            # チーム情報・国旗
-│   └── groups.js           # グループ順位データ
-├── hooks/
-│   ├── useFavorites.js     # localStorage お気に入り管理
-│   └── useCountdown.js     # リアルタイムカウントダウン
-└── styles/
-    └── globals.css         # デザインシステム全体
+├── api/
+│   └── football-data.js      # Vercel Serverless Function（APIプロキシ）
+├── public/
+│   ├── icons/
+│   │   ├── icon-source.svg   # アイコン差し替え用ソース
+│   │   ├── icon-192.png
+│   │   └── icon-512.png
+│   └── images/               # スタジアム背景・トロフィー
+├── scripts/
+│   └── generate-icons.js     # npm run generate-icons
+└── src/
+    ├── components/
+    │   ├── WcHero.jsx         # 開幕ヒーロー + カウントダウン
+    │   ├── Countdown.jsx      # 次の試合ヒーローカード
+    │   ├── MatchCard.jsx      # 試合カード
+    │   ├── FeaturedCard.jsx   # 注目試合カード
+    │   ├── StatsBar.jsx       # ダッシュボードバー
+    │   ├── BottomNav.jsx      # ボトムナビゲーション
+    │   ├── InstallBanner.jsx  # PWA インストールバナー
+    │   └── NotificationButton.jsx
+    ├── pages/
+    │   ├── Home.jsx           # トップページ
+    │   ├── Matches.jsx        # 試合スケジュール / 結果
+    │   ├── Favorites.jsx      # お気に入りチーム管理
+    │   └── Standings.jsx      # グループ順位表
+    ├── hooks/
+    │   ├── useMatches.js      # API 取得 + モジュールキャッシュ + フォールバック
+    │   ├── useFavorites.js    # localStorage お気に入り管理
+    │   ├── useCountdown.js    # リアルタイムカウントダウン
+    │   └── useInstallPrompt.js
+    ├── services/
+    │   └── footballApi.js     # API レスポンス → 内部フォーマット変換
+    ├── data/
+    │   ├── matches.js         # フォールバック用ダミーデータ + ヘルパー関数
+    │   ├── teams.js           # 全 48 チーム情報（TLA / 国旗）
+    │   └── groups.js          # グループ順位フォールバックデータ
+    └── styles/
+        └── globals.css        # CSS カスタムプロパティベースのデザインシステム
 ```
 
 ---
 
-## ローカル起動
+## 今後の実装予定
 
-```bash
-# リポジトリをクローン
-git clone https://github.com/your-username/MatchPulse.git
-cd MatchPulse
-
-# 依存パッケージをインストール
-npm install
-
-# 開発サーバーを起動
-npm run dev
-```
-
-ブラウザで `http://localhost:5173` を開く。  
-スマホ表示で確認する場合は DevTools で **iPhone 14 (390×844)** を推奨。
-
-```bash
-# プロダクションビルド
-npm run build
-
-# ビルド結果のプレビュー
-npm run preview
-```
+- **LIVE スコア更新** — 試合中のポーリングによるリアルタイムスコア反映
+- **プッシュ通知** — Service Worker + Web Push API でキックオフ前通知
+- **トーナメント表** — ラウンド 16 以降の対戦ブラケット表示
+- **OGP / シェア機能** — 試合カードの SNS シェア対応
+- **Capacitor によるネイティブ化** — App Store / Google Play への申請対応
 
 ---
 
-## 今後のロードマップ
+## デザインシステム
 
-```
-Phase 1（現在）
-  ✅ UI / UX 設計・実装
-  ✅ ダミーデータによる全機能のプロトタイプ
-  ✅ モバイル・PC レスポンシブ対応
-
-Phase 2
-  □ Football Data API 接続・リアルタイムデータ化
-  □ 試合結果・スコアのライブ更新
-  □ トーナメント表の実装
-
-Phase 3
-  □ PWA 化・プッシュ通知
-  □ Vercel デプロイ・本番公開
-  □ パフォーマンス最適化
+```css
+--ink:        #070707   /* 深い黒（ベース背景） */
+--off-white:  #f0ebe2   /* アイボリーホワイト（テキスト） */
+--gold:       #c8a84b   /* プレステージゴールド（アクセント） */
+--live:       #c94040   /* ライブバッジ */
 ```
 
----
-
-## ポートフォリオとして見ている方へ
-
-このプロジェクトでは以下を意識して制作しています。
-
-- **API 連携を前提とした設計** — `src/data/` のダミーデータを API レスポンスに差し替えるだけで本番稼働できる構造
-- **コンポーネント設計** — 再利用・拡張を考慮した分割
-- **CSS カスタムプロパティによるデザインシステム** — フレームワーク不使用でも統一感のある UI
-- **UX への配慮** — スタジアムの空気感・大会の高揚感をビジュアルで体験できるデザイン
-- **実用性** — 実際のワールドカップ開幕 (2026/6/11) に向けて使えるアプリとして設計
+Apple / Nike Football / DAZN を参照し、余白・タイポグラフィ・カード設計を統一。ネオン・グロー系エフェクトを意図的に排除し、上質なスポーツブランドの質感を目指しました。
 
 ---
 
